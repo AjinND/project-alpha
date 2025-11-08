@@ -82,7 +82,7 @@ class VLMInterface:
             return {}
     
     def locate_element(self, screenshot: np.ndarray, element_description: str,
-                      context: Dict) -> Optional[Dict]:
+                      context: Dict = None) -> Optional[Dict]:
         """Use VLM to locate UI element with bounding box."""
         h, w = screenshot.shape[:2]
         

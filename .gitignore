@@ -211,3 +211,5 @@ myenv/
 *.log
 *bk.py
 *.mp4
+/clip_cache/
+/automation_screenshots

@@ -290,7 +290,8 @@ class VisualImitationLearner:
         
         # Initialize CLIP for semantic understanding
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
-        self.clip_model, self.clip_preprocess = clip.load("ViT-B/32", device=self.device)
+        self.clip_model, self.clip_preprocess = clip.load("ViT-B/32", device=self.device, download_root="./clip_cache")
+
         
         # Storage for learned interactions
         self.interaction_memories: List[InteractionMemory] = []
