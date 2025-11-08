@@ -188,6 +188,10 @@ class IntentClassifier:
                 if time_diff < 2.0 and text_similarity > 0.8:
                     logger.debug(f"Skipping duplicate: {segment['cleaned_text']}")
                     continue
+
+                if prev_segment and text_similarity > 0.8:
+                    if 'username and password' in segment['cleaned_text'].lower():  # Specific filter for redundant
+                        continue
             
             processed.append(segment)
             prev_segment = segment

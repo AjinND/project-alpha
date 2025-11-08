@@ -60,7 +60,7 @@ class ScreenshotManager:
         """Generate HTML summary with screenshots."""
         html_path = os.path.join(self.session_dir, "summary.html")
         html_content = self._build_html_content(execution_log)
-        with open(html_path, 'w') as f:
+        with open(html_path, 'w', encoding='utf-8') as f:
             f.write(html_content)
         logger.info(f"Summary HTML created: {html_path}")
         return html_path

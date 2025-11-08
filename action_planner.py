@@ -1,7 +1,7 @@
 import logging
 from typing import List, Dict, Tuple, Optional
-from .vlm_interface import VLMInterface
-from .visual_memory import VisualMemory
+from vlm_interface import VLMInterface
+from visual_memory import VisualMemory
 from visual_imitation_system import VisualImitationLearner
 import cv2
 

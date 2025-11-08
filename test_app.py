@@ -21,8 +21,11 @@ from intent_classifier import integrate_intent_classifier
 # Logging setup
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s [%(levelname)s] %(message)s',
-    handlers=[logging.FileHandler("automation_enhanced.log"), logging.StreamHandler()]
+    format="%(asctime)s [%(levelname)s] %(message)s",
+    handlers=[
+        logging.FileHandler("automation_enhanced.log", encoding="utf-8"),
+        logging.StreamHandler(sys.stdout),
+    ],
 )
 logger = logging.getLogger(__name__)
 
@@ -49,7 +52,7 @@ def transcribe_audio(video_path: str, config: Config) -> list:
     
     try:
         video = VideoFileClip(video_path)
-        video.audio.write_audiofile(audio_path, verbose=False, logger=None)
+        video.audio.write_audiofile(audio_path)
         video.close()
     finally:
         sys.stdout = old_stdout

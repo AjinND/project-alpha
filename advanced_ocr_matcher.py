@@ -32,29 +32,47 @@ class AdvancedOCRMatcher:
             List of dicts: [{'text': str, 'bbox': [x1,y1,x2,y2], 'confidence': float, 'center': (x,y)}]
         """
         self._init_ocr()
-        result = self.ocr.ocr(image, cls=True)
+        result = self.ocr.ocr(image)
         
         extractions = []
-        for line in result[0] if result and result[0] else []:
-            bbox = line[0]  # [[x1,y1], [x2,y2], [x3,y3], [x4,y4]]
-            text_info = line[1]  # (text, confidence)
-            text = text_info[0]
-            confidence = text_info[1]
-            
-            # Convert bbox to x1,y1,x2,y2
-            x_coords = [pt[0] for pt in bbox]
-            y_coords = [pt[1] for pt in bbox]
-            x1, y1 = min(x_coords), min(y_coords)
-            x2, y2 = max(x_coords), max(y_coords)
-            
-            center = ((x1 + x2) // 2, (y1 + y2) // 2)
-            
-            extractions.append({
-                'text': text,
-                'bbox': [int(x1), int(y1), int(x2), int(y2)],
-                'confidence': confidence,
-                'center': (int(center[0]), int(center[1]))
-            })
+        if result and isinstance(result, list):
+            for page in result:
+                if not page:
+                    continue
+                for line in page:
+                    try:
+                        box = line[0]
+                        text_info = line[1]
+
+                        if isinstance(text_info, (list, tuple)) and len(text_info) >= 2:
+                            text, confidence = text_info[0], float(text_info[1])
+                        elif isinstance(text_info, (list, tuple)) and len(text_info) == 1:
+                            text, confidence = text_info[0], 0.0
+                        elif isinstance(text_info, str):
+                            text, confidence = text_info, 0.0
+                        else:
+                            continue  # skip malformed entries
+
+                        # Compute bbox and center even if malformed
+                        if box and len(box) == 4:
+                            x_coords = [pt[0] for pt in box]
+                            y_coords = [pt[1] for pt in box]
+                            x1, y1 = min(x_coords), min(y_coords)
+                            x2, y2 = max(x_coords), max(y_coords)
+                            center = ((x1 + x2) // 2, (y1 + y2) // 2)
+                        else:
+                            continue  # Skip if no box
+
+                        extractions.append({
+                            "text": text,
+                            "confidence": confidence,
+                            "bbox": [int(x1), int(y1), int(x2), int(y2)],  # Fixed: bbox key
+                            "center": center,  # Fixed: Always compute center
+                            "box": box  # Keep original if needed
+                        })
+                    except Exception as e:
+                        logging.debug(f"Skipping malformed OCR line {line}: {e}")
+                        continue
         
         return extractions
     
